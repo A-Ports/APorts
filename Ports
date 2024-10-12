@@ -1,1 +1,109 @@
-222
+****Qpid: 801.1q TRUNKING
+
+config t 
+int range fa0/10-12
+ shutdown
+ no shutdown
+ switchport
+ switchport trunk encap dot1q
+ switchport mode trunk
+do sh int trunk
+
+****Darna: 802.1d STP: primary/secondary root bridge:
+CORETAAS:D1
+Conf t
+spanning-tree mode pvst
+spanning-tree vlan 1-100 root primary
+
+COREBABA:D2
+Conf t
+spanning-tree mode pvst
+spanning-tree vlan 1-100 root secondary
+do sh spanning-tree vlan 1 
+
+Etherchannel Configuration: Exam Laboratory
+
+config t 
+int range e1/2-3
+ channel-group 30 mode active
+ channel-protocol lacp
+ do sh etherchannel summary
+ do sh int po1 | inc BW
+
+config t 
+int range e0/1-2
+ channel-group 10 mode active
+ channel-protocol lacp
+ int range e0/3,e1/0
+ channel-group 20 mode active
+ channel-protocol lacp
+
+LAB 2: Always protect Fiberports using Unidirectional Link Detection UDLD
+
+lab 3: Root guard, bpdu guard, loopguard:
+Core Taas:
+conf t
+spanning-tree mode rapid-pvst
+spanning-tree backbonefast
+spanning-tree portfast bpduguard default
+int range fa0/1-8
+ spanning-tree portfast
+ spanning-tree guard root
+
+Core Baba:
+
+conf t
+spanning-tree mode rapid-pvst
+spanning-tree uplinkfast
+spanning-tree portfast bpduguard default
+int range fa0/1-8
+spanning-tree portfast
+spanning-tree guard root
+int range fa0/10-12
+!trunkports into:
+spanning-tree guard loop
+end
+
+lab 3: Multiple Instance STP: 802.1s/Mst;
+step1: Configure VTP: vlantrunkingprotocol:
+
+Core Taas: 
+
+conf t
+vtp domain ccnp
+vtp password pass
+vtp mode server
+vtp version 2
+exit
+
+Core Baba:
+
+conf t
+vtp domain ccnp
+vtp password pass
+vtp mode client
+vtp version 2
+exit
+
+step 2: Create many vlans and deploy in diff. cpu instance:
+Coretaas:
+conf t
+vlan 11-19
+exit
+vlan 21-29
+exit
+vlan 31-39
+exit
+
+step 3:
+
+config t
+spanning-tree mode mst
+spanning-tree mst configuration
+name supermanstp
+revision 1
+ Instance 1 vlan 11-19
+ Instance 2 vlan 21-29
+ Instance 3 vlan 31-39
+exit
+do show spanning-tree mst configuration
