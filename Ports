@@ -39,6 +39,8 @@ int range e0/1-2
  channel-protocol lacp
 
 LAB 2: Always protect Fiberports using Unidirectional Link Detection UDLD
+int gi0/1
+udld port aggressive or (normal)
 
 lab 3: Root guard, bpdu guard, loopguard:
 Core Taas:
