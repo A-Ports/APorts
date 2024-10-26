@@ -1,0 +1,15 @@
+NXOSA:
+
+hostname NexusPH
+feature eigrp
+checkpoint config1
+
+hostname NexusPinas
+feature ospf
+int lo 1
+  ip add 1.1.1.1/32
+  no shut
+  checkpoint config2
+
+! To check all save checkpoints
+show checkpoint summary
